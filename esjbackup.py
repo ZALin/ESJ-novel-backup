@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	r = requests.get('https://www.esjzone.cc/detail/' + novel_id + '.html')
 	html_element = lxml.html.document_fromstring(r.text)
 
-	dst_filename = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content()
+	dst_filename = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content() + ".txt"
 	chapter_list = html_element.get_element_by_id("chapterList").getchildren()
 
 	for element in chapter_list:
