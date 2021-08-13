@@ -16,13 +16,18 @@ def write_page(url, dst_file):
 
 if __name__ == "__main__":
 
-    novel_id = ''
+    novel_id = ''  # the novel id which you want to download
     r = requests.get('https://www.esjzone.cc/detail/' + novel_id + '.html')
     html_element = lxml.html.document_fromstring(r.text)
 
     dst_filename = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content() + ".txt"
-    chapter_list = html_element.get_element_by_id("chapterList").getchildren()
 
+    novel_details = html_element.get_element_by_id("details").text_content()
+    with open(dst_filename, 'w') as f:
+        f.write(novel_details.encode('utf-8'))
+
+    chapter_list = html_element.get_element_by_id("chapterList").getchildren()
+    
     for element in chapter_list:
         
         with open(dst_filename, 'a') as f:
@@ -37,4 +42,7 @@ if __name__ == "__main__":
                 with open(dst_filename, 'a') as f:
                     #print element.text_content()
                     f.write(u'{非站內連結，略過}\n'.encode('utf-8'))
+
+
+
 
