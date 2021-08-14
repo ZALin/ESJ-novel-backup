@@ -46,9 +46,7 @@ if __name__ == "__main__":
                 write_page(element.attrib['href'],dst_filename)
             else:
                 with open(dst_filename, 'a') as f:
-                    #print element.text_content()
-                    f.write(u'{非站內連結，略過}\n'.encode('utf-8'))
-
+                    f.write(element.attrib['href'] + u' {非站內連結，略過}\n\n'.encode('utf-8'))
 
 
 
