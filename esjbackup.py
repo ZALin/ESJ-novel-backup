@@ -28,12 +28,12 @@ if __name__ == "__main__":
     with open(dst_filename, 'w') as f:
         f.write(novel_details.encode('utf-8'))
 
-    novel_description = html_element.get_element_by_id("details").text_content()
-    with open(dst_filename, 'a') as f:
-        f.write(novel_description.encode('utf-8'))
+    if re.search('id="details"', r.text):
+        novel_description = html_element.get_element_by_id("details").text_content()
+        with open(dst_filename, 'a') as f:
+            f.write(novel_description.encode('utf-8'))
 
     if re.search('id="chapterList"', r.text):
-        
         chapter_list = html_element.get_element_by_id("chapterList").getchildren()
         
         for element in chapter_list:
