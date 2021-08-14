@@ -32,21 +32,22 @@ if __name__ == "__main__":
     with open(dst_filename, 'a') as f:
         f.write(novel_description.encode('utf-8'))
 
-    chapter_list = html_element.get_element_by_id("chapterList").getchildren()
+    if re.search('id="chapterList"', r.text):
+        
+        chapter_list = html_element.get_element_by_id("chapterList").getchildren()
+        
+        for element in chapter_list:
     
-    for element in chapter_list:
-        
-        with open(dst_filename, 'a') as f:
-            #print element.text_content()
-            f.write(element.text_content().encode('utf-8')+'\n')
-        
-        if element.tag == 'a':
+            with open(dst_filename, 'a') as f:
+                f.write(element.text_content().encode('utf-8')+'\n')
+            
+            if element.tag == 'a':
 
-            if re.search(r'esjzone\.cc/forum/\d+/\d+\.html', element.attrib['href']):
-                write_page(element.attrib['href'],dst_filename)
-            else:
-                with open(dst_filename, 'a') as f:
-                    f.write(element.attrib['href'] + u' {非站內連結，略過}\n\n'.encode('utf-8'))
+                if re.search(r'esjzone\.cc/forum/\d+/\d+\.html', element.attrib['href']):
+                    write_page(element.attrib['href'],dst_filename)
+                else:
+                    with open(dst_filename, 'a') as f:
+                        f.write(element.attrib['href'] + u' {非站內連結，略過}\n\n'.encode('utf-8'))
 
 
 
