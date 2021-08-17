@@ -5,15 +5,46 @@ import requests
 import lxml.html
 import re
 
+symbol_list = {
+    "\\": "-",
+    "/": "-",
+    ":": "：",
+    "*": "☆",
+    "?": "？",
+    "\"": " ",
+    "<": "《",
+    ">": "》",
+    "|": "-",
+    ".": "。",
+    "\t": " ",
+    "\n": " ",
+}
+
 def write_page(url, dst_file):
     r = requests.get(url)
     html_element = lxml.html.document_fromstring(r.text)
-    title = html_element.xpath('//h2')[0]
-    author = html_element.xpath('//div[@class="single-post-meta m-t-20"]/div')[0]
-    content = html_element.xpath('//div[@class="forum-content mt-3"]')[0]
-    with open(dst_file, 'a') as f:
-        f.write('[' + title.text_content().encode('utf-8') + '] ' + author.text_content().strip().encode('utf-8') + '\n')
-        f.write(content.text_content().encode('utf-8')+'\n\n')
+    if html_element.xpath('//h2'):
+        title = html_element.xpath('//h2')[0]
+        author = html_element.xpath('//div[@class="single-post-meta m-t-20"]/div')[0]
+        content = html_element.xpath('//div[@class="forum-content mt-3"]')[0]
+        with open(dst_file, 'a') as f:
+            f.write('[' + title.text_content().encode('utf-8') + '] ' + author.text_content().strip().encode('utf-8') + '\n')
+            f.write(content.text_content().encode('utf-8')+'\n\n')
+
+def contain(string, array):
+    if isinstance(array, dict):
+        return any(symbol in string for symbol in array.keys())
+    elif isinstance(array, list) or isinstance(array, tuple):
+        return any(symbol in string for symbol in array)
+    return False
+
+
+def escape_symbol(string):
+    while contain(string, symbol_list):
+        for char, replace_char in symbol_list.items():
+            string = string.replace(char, replace_char)
+    return string
+
 
 if __name__ == "__main__":
 
@@ -22,7 +53,7 @@ if __name__ == "__main__":
     html_element = lxml.html.document_fromstring(r.text)
 
     novel_name = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content()
-    dst_filename = novel_name + ".txt"
+    dst_filename = escape_symbol(novel_name.encode('utf-8')) + ".txt"
 
     novel_details = html_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]')[0].text_content()
     with open(dst_filename, 'w') as f:
@@ -32,6 +63,9 @@ if __name__ == "__main__":
         novel_description = html_element.get_element_by_id("details").text_content()
         with open(dst_filename, 'a') as f:
             f.write(novel_description.encode('utf-8'))
+    else:
+        with open(dst_filename, 'a') as f:
+            f.write('\n\n')
 
     if re.search('id="chapterList"', r.text):
         chapter_list = html_element.get_element_by_id("chapterList").getchildren()
