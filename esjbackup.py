@@ -55,7 +55,10 @@ if __name__ == "__main__":
     novel_name = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content()
     dst_filename = escape_symbol(novel_name.encode('utf-8')) + ".txt"
 
-    novel_details = html_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]')[0].text_content()
+    novel_details_element = html_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]')[0]
+    bad_div = novel_details_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]/li/div')[0]
+    bad_div.getparent().remove(bad_div)
+    novel_details = novel_details_element.text_content()
     with open(dst_filename, 'w') as f:
         f.write(novel_details.encode('utf-8'))
 
