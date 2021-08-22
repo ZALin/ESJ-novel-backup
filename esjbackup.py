@@ -4,6 +4,8 @@
 import requests
 import lxml.html
 import re
+import json
+import os
 
 symbol_list = {
     "\\": "-",
@@ -19,6 +21,7 @@ symbol_list = {
     "\t": " ",
     "\n": " ",
 }
+
 
 def write_page(url, dst_file):
     r = requests.get(url)
@@ -48,6 +51,41 @@ def escape_symbol(string):
 
 if __name__ == "__main__":
 
+    current_path = os.path.split(os.path.realpath(__file__))[0]
+
+    url = ''
+    
+    r = requests.get(url)
+    html_element = lxml.html.document_fromstring(r.text)
+    novel_name = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content()
+    novel_name = escape_symbol(novel_name.encode('utf-8'))
+    print r.text
+    m = re.search(r"var mem_id='(u?\d+)',mem_nickname='.*',token='(.+)';", r.text) 
+    mem_id, token = m.groups()
+    m = re.search(r"forum_list_data\.php\?token=.+&totalRows=(\d+)&bid=(\d+)", r.text) 
+    totalRows, bid = m.groups()
+
+    r = requests.get(url + 'forum_list_data.php?token=' + token + '&totalRows=' + str(totalRows) + '&bid=' + str(bid) + \
+                     '&sort=cdate&order=asc&offset=0&limit=' + str(totalRows) )
+
+    chapter_josn = json.loads(r.text)
+
+    if chapter_josn["rows"]:
+
+        if not os.path.isdir( os.path.normpath( current_path + '/' + novel_name ) ):
+            os.system("mkdir " + str(os.path.normpath( current_path + '/' + novel_name )))
+
+        for chapter in chapter_josn["rows"]:
+            chapter_name = chapter["subject"].split('target="_blank">')[1].split('</a>')[0]
+            chapter_name = escape_symbol(chapter_name.encode('utf-8'))
+            dst_filename = os.path.normpath( current_path + '/' + novel_name + '/' + chapter_name + '.txt')
+            chapter_url = re.sub(r'/forum/\d+/\d+/', chapter["subject"].split('"')[1], url)
+            write_page(chapter_url, dst_filename)
+
+
+    
+
+    '''
     novel_id = ''  # the novel id which you want to download
     r = requests.get('https://www.esjzone.cc/detail/' + novel_id + '.html')
     html_element = lxml.html.document_fromstring(r.text)
@@ -88,5 +126,5 @@ if __name__ == "__main__":
                     with open(dst_filename, 'a') as f:
                         f.write(element.attrib['href'] + u' {非站內連結，略過}\n\n'.encode('utf-8'))
 
-
+    '''
 
