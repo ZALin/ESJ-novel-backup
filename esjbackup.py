@@ -105,6 +105,13 @@ if __name__ == "__main__":
         with open(dst_filename, 'a') as f:
             f.write(novel_details.encode('utf-8'))
 
+        novel_outlink_element = html_element.xpath('//div[@class="row out-link"]')[0]
+        if len(novel_outlink_element) != 0:
+            outlink_list = novel_outlink_element.getchildren()
+            for element in outlink_list:
+                with open(dst_filename, 'a') as f:
+                    f.write(element.getchildren()[0].text_content().encode('utf-8') + u":\n".encode('utf-8') + element.getchildren()[0].attrib['href'].encode('utf-8') + "\n")
+
         if re.search('id="details"', r.text):
             novel_description = html_element.get_element_by_id("details").text_content()
             with open(dst_filename, 'a') as f:
