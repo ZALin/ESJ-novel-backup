@@ -91,13 +91,18 @@ if __name__ == "__main__":
         novel_name = html_element.xpath('//h2[@class="p-t-10 text-normal"]')[0].text_content()
         novel_name = escape_symbol(novel_name)
         dst_filename = os.path.normpath( current_path + '/' + novel_name + '.txt')
+        with open(dst_filename, 'w') as f:
+            f.write(u"書名: " + novel_name + "\n")
+        with open(dst_filename, 'a') as f:
+            f.write(u"URL: " + url)
+
         novel_details_element = html_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]')[0]
         if novel_details_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]/li/div'):
             bad_divs = novel_details_element.xpath('//ul[@class="list-unstyled mb-2 book-detail"]/li/div')
             for bad_div in bad_divs:
                 bad_div.getparent().remove(bad_div)
         novel_details = novel_details_element.text_content()
-        with open(dst_filename, 'w') as f:
+        with open(dst_filename, 'a') as f:
             f.write(novel_details)
 
         if re.search('id="details"', r.text):
