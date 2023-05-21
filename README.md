@@ -1,5 +1,5 @@
 # ESJ-novel-backup
-ESJZone 小說的備份工
+ESJZone 小說的備份工具
 
 ## Python 版本
 Python 2.x 對應 esjbackup.py  
@@ -23,7 +23,7 @@ Python 3.x 對應 esjbackup3.py
 
 `pyhon esjbackup.py https://www.esjzone.cc/forum/1584679807/1599746513/`
 
-生成該小說的名稱的目錄，目錄內有所有論壇內文章的 txt 文字檔。
+生成該小說名稱的目錄，該目錄內有所有論壇內文章的 txt 文字檔，檔案名為該文章的標題名稱。
 
 　  
 
